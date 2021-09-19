@@ -1,4 +1,26 @@
 const fs = require('fs');
+const student2 = {
+    ID: 2,
+    name: "Bach",
+    age: 18,
+    gender: "male",
+    department: "TaTa",
+};
+const student1 = {
+    ID: 1,
+    name: "Tan",
+    age: 25,
+    gender: "female",
+    department: "Bass",
+};
+// write
+const writeFile = async(data) =>{
+    await fs.promises.writeFile(`student.json`,JSON.stringify(data),(err) => {
+        if (err) {
+            throw err;
+        }
+    });
+}
 // creat
 const creatFile = async () => {
     const isexist = await fs.existsSync(`student.json`)
@@ -24,54 +46,56 @@ const readAll = async () =>{
     }
 }
 // update
-// tim kiem theo key
-const findid = async (key) => {
-    var list = await fs.promises.readFile(`student.json`,'utf8');
-    list = JSON.parse(list);
-    console.log(list);
-    for(var i = 0; i < list.length; i++) {
-        console.log(list[i].name);
-        // if(data[i].name === key) {
-        //     console.log("tim thay data");
-        //     return true;
-        // }
+const updateFile = async (key,obj) =>{
+    var data = await fs.promises.readFile('student.json','utf8');
+    data = JSON.parse(data);
+    for(var i = 0; i < data.length; i++) {
+        if(data[i].ID === key){
+            console.log(data[i]);
+            console.log("tim thay data");
+            data[i] = obj;
+        }
     }
-    console.log("không tìm thấy data");
-    // return false;
+    list.sort(function(a,b){
+        return a.ID - b.ID
+    });
+    writeFile(data);
+    
 }
-const find = async (key) =>{
-    var data = await fs.promises.readFile(`student.json`,'utf8');
-    console.log(data);
-    var list = JSON.parse(data);
-    const found = list.filter((data) => JSON.parse(data).id.includes(key))
-    console.log(found);
-    if(found.length > 0){
-        console.log("tim thay data");
-        return true;
+// add 
+const addFile = async (obj) =>{
+    const read = await fs.promises.readFile("student.json", "utf8");
+    let list = JSON.parse(read);
+    // khoi tao mot mang luu id
+    let idList = list.map((e) => e.ID);
+    // khong tim thay id do thi moi add vao, khong add trùng
+    if (idList.indexOf(obj.ID) < 0) {
+        list.push(obj);
+        // sort ID
+        list.sort(function(a,b){
+            return a.ID - b.ID
+        });
+        writeFile(list);
+        console.log("add thanh cong");
+    } else {
+        console.log("add khong thanh cong");
     }
-    else {
-        console.log("Khong tim thay");
-        return false;
-    }    
 }
-// const updateFile = async (key,obj) =>{
-//     var data = await fs.promises.readFile('student.json','utf8');
-//     data = data.map((data) =>{
-//         if(find(key) === true){
-
-//         }
-//     });
-// }
+// delete 
+const deleteFile = async (key) => {
+    var data = await fs.promises.readFile("student.json", "utf8");
+         data = JSON.parse(data);
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].ID === key) {
+            data.splice(data.indexOf(data[i]), 1);
+            console.log("delete thanh cong");
+            }
+        }
+        writeFile(data);
+};
 const main = async () =>{
-    // await creatFile();
-    // await readAll();
-    findid();
-    // updatestudentbyName("Trai Việt Nam", {
-    //   id: "",
-    //   name: "Củ khoai tây",
-    //   age: "5",
-    //   gender: "vô tính",
-    //   department: "củ",
-    // });
+    await deleteFile(1);
+    //await addFile(student1)
+    
 }
 main();
